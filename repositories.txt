@@ -1,3 +1,5 @@
 sigp/public-audits,2024-10-18
 bailsec/BailSec,2024-10-18
 Cyfrin/cyfrin-audit-reports,2024-10-18
+solidified-platform/audits,2024-10-18
+pashov/audits,2024-10-18
