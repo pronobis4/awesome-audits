@@ -9,7 +9,7 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3  # Updated to v3 for Node 16 compatibility
+    - uses: actions/checkout@v3  # Will run on Node 20 in the future
       with:
         fetch-depth: 2  # Fetch the last two commits to compare changes
 
@@ -18,27 +18,34 @@ jobs:
       run: |
         git diff --quiet HEAD^ HEAD repositories.txt || echo "changed=true" >> $GITHUB_OUTPUT
 
+    - name: Ensure README exists
+      run: |
+        if [ ! -f README.md ]; then
+          echo "README.md does not exist. Creating a new one."
+          touch README.md
+        fi
+
     - name: Set up Python
-      if: steps.check_changes.outputs.changed == 'true'
-      uses: actions/setup-python@v4  # Updated to v4 for Node 16 compatibility
+      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Always set up Python if README doesn't exist
+      uses: actions/setup-python@v4  # Compatible with Node 16 and future Node 20
       with:
         python-version: '3.x'
 
     - name: Install dependencies
-      if: steps.check_changes.outputs.changed == 'true'
+      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Install dependencies if README needs updating or doesn't exist
       run: |
         python -m pip install --upgrade pip
         pip install PyGithub humanize
 
     - name: Run Python script to update README
-      if: steps.check_changes.outputs.changed == 'true'
+      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Always update README if it doesn't exist
       run: python update_readme.py
 
     - name: Commit changes
-      if: steps.check_changes.outputs.changed == 'true'
+      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Commit changes if README doesn't exist or changes detected
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add README.md
-        git diff --quiet && git diff --staged --quiet || git commit -m "Update README"
+        git diff --quiet && git diff --staged --quiet || git commit -m "Create or Update README"
         git push
