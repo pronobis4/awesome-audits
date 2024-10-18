@@ -1,2 +1,3 @@
 sigp/public-audits,2024-08-18
 bailsec/BailSec,2024-08-18
+Cyfrin/cyfrin-audit-reports,2024-08-18
