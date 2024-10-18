@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * *'  # Runs every day at midnight
   workflow_dispatch:  # Allows manual triggering
 
+permissions:
+  contents: write  # Explicitly grant write access
+
 jobs:
   update-readme:
     runs-on: ubuntu-latest
@@ -53,6 +56,8 @@ jobs:
 
     - name: Commit changes
       if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the token to authenticate push
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
