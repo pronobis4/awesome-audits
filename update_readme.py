@@ -3,6 +3,7 @@ import re
 from github import Github
 from datetime import datetime, timedelta
 import humanize
+import pytz
 
 def extract_twitter_username(text):
     # Szuka linków do Twittera lub X w danym tekście
@@ -48,7 +49,10 @@ def update_readme():
 
         total_repos = 0
         newest_project = None
-        six_months_ago = datetime.now() - timedelta(days=180)
+        
+        now = datetime.now()
+        six_months_ago = now - timedelta(days=180)
+        six_months_ago = six_months_ago.replace(tzinfo=last_commit.tzinfo)
 
         for repo, last_commit, time_ago, added_date, twitter_user in repo_info:
             total_repos += 1
