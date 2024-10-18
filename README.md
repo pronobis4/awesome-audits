@@ -6,14 +6,16 @@ This is a curated list of repositories containing smart contract audits. The lis
 
 | Repository | Stars | Last Commit | Added On | Twitter |
 |------------|-------|:-----------:|:--------:|---------|
-| [bailsec/BailSec](https://github.com/bailsec/BailSec) | 12 | 2024-10-18 | 2024-08-18 | N/A |
-| [sigp/public-audits](https://github.com/sigp/public-audits) | 149 | 2024-10-13 | 2024-08-18 | N/A |
-| [Cyfrin/cyfrin-audit-reports](https://github.com/Cyfrin/cyfrin-audit-reports) | 145 | 2024-10-08 | 2024-08-18 | N/A |
+| [bailsec/BailSec](https://github.com/bailsec/BailSec) 🆕 | 12 | 2024-10-18 | 2024-10-18 | N/A |
+| [pashov/audits](https://github.com/pashov/audits) 🆕 | 977 | 2024-10-16 | 2024-10-18 | N/A |
+| [sigp/public-audits](https://github.com/sigp/public-audits) 🆕 | 149 | 2024-10-13 | 2024-10-18 | N/A |
+| [Cyfrin/cyfrin-audit-reports](https://github.com/Cyfrin/cyfrin-audit-reports) 🆕 | 145 | 2024-10-08 | 2024-10-18 | N/A |
+| [solidified-platform/audits](https://github.com/solidified-platform/audits) 🆕 | 182 | 2024-06-11 | 2024-10-18 | N/A |
 
 ## Statistics
 
-- Total number of audit repositories: 3
-- Newest addition: [bailsec/BailSec](https://github.com/bailsec/BailSec) (added on 2024-08-18)
+- Total number of audit repositories: 5
+- Newest addition: [bailsec/BailSec](https://github.com/bailsec/BailSec) (added on 2024-10-18)
 
 ## Legend
 
