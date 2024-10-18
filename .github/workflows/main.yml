@@ -63,4 +63,4 @@ jobs:
         git config --local user.name "GitHub Action"
         git add README.md
         git diff --quiet && git diff --staged --quiet || git commit -m "Create or Update README"
-        git push
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/pronobis4/awesome-audits.git
