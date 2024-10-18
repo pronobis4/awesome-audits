@@ -1,7 +1,14 @@
 import os
+import re
 from github import Github
 from datetime import datetime, timedelta
 import humanize
+
+def extract_twitter_username(text):
+    # Szuka linków do Twittera lub X w danym tekście
+    twitter_pattern = r'(?:https?://)?(?:www\.)?(?:twitter\.com|x\.com)/([a-zA-Z0-9_]+)'
+    match = re.search(twitter_pattern, text)
+    return match.group(1) if match else None
 
 def update_readme():
     g = Github(os.environ['GITHUB_TOKEN'])
@@ -17,7 +24,16 @@ def update_readme():
         if repo:
             last_commit = repo.get_commits()[0].commit.author.date
             time_ago = humanize.naturaltime(datetime.now(last_commit.tzinfo) - last_commit)
-            repo_info.append((repo, last_commit, time_ago, added_date))
+            
+            # Extract Twitter username from repo description
+            twitter_user = extract_twitter_username(repo.description or "")
+            
+            # Extract Twitter username from organization description if available
+            if repo.organization:
+                twitter_user_org = extract_twitter_username(repo.organization.description or "")
+                twitter_user = twitter_user or twitter_user_org
+            
+            repo_info.append((repo, last_commit, time_ago, added_date, twitter_user))
 
     # Sort repos by last commit date, newest first
     repo_info.sort(key=lambda x: x[1], reverse=True)
@@ -27,14 +43,14 @@ def update_readme():
         f.write("This is a curated list of repositories containing smart contract audits. ")
         f.write("The list is automatically updated daily.\n\n")
         f.write("## Audit Repositories\n\n")
-        f.write("| Repository | Description | Last Commit | Added On |\n")
-        f.write("|------------|-------------|:-----------:|:--------:|\n")
+        f.write("| Repository | Description | Last Commit | Added On | Twitter |\n")
+        f.write("|------------|-------------|:-----------:|:--------:|---------|\n")
 
         total_repos = 0
         newest_project = None
         six_months_ago = datetime.now() - timedelta(days=180)
 
-        for repo, last_commit, time_ago, added_date in repo_info:
+        for repo, last_commit, time_ago, added_date, twitter_user in repo_info:
             total_repos += 1
             added_date_obj = datetime.strptime(added_date, '%Y-%m-%d')
 
@@ -44,8 +60,10 @@ def update_readme():
             # Add new and sleepy tags
             new_tag = " 🆕" if added_date_obj > datetime.now() - timedelta(days=30) else ""
             sleepy_tag = " 😴" if last_commit < six_months_ago else ""
+            
+            twitter_link = f"[{twitter_user}](https://twitter.com/{twitter_user})" if twitter_user else "N/A"
 
-            f.write(f"| [{repo.full_name}]({repo.html_url}){new_tag}{sleepy_tag} | {repo.description or 'No description'} | {last_commit.strftime('%Y-%m-%d')} ({time_ago}) | {added_date} |\n")
+            f.write(f"| [{repo.full_name}]({repo.html_url}){new_tag}{sleepy_tag} | {repo.description or 'No description'} | {last_commit.strftime('%Y-%m-%d')} ({time_ago}) | {added_date} | {twitter_link} |\n")
 
         f.write("\n## Statistics\n\n")
         f.write(f"- Total number of audit repositories: {total_repos}\n")
