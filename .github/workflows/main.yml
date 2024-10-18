@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-depth: 2  # Fetch the last two commits to compare changes
+        fetch-depth: 2
 
     - name: Check if repositories.txt has changed
       id: check_changes
@@ -47,6 +47,8 @@ jobs:
 
     - name: Run Python script to update README
       if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure GITHUB_TOKEN is passed
       run: python update_readme.py
 
     - name: Commit changes
