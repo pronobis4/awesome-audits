@@ -9,7 +9,7 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3  # Will run on Node 20 in the future
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 2  # Fetch the last two commits to compare changes
 
@@ -18,31 +18,39 @@ jobs:
       run: |
         git diff --quiet HEAD^ HEAD repositories.txt || echo "changed=true" >> $GITHUB_OUTPUT
 
-    - name: Ensure README exists
+    - name: Check if README.md exists
+      id: check_readme
       run: |
-        if [ ! -f README.md ]; then
-          echo "README.md does not exist. Creating a new one."
-          touch README.md
+        if [ -f README.md ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
         fi
 
+    - name: Ensure README exists
+      if: steps.check_readme.outputs.exists == 'false'
+      run: |
+        echo "README.md does not exist. Creating a new one."
+        touch README.md
+
     - name: Set up Python
-      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Always set up Python if README doesn't exist
-      uses: actions/setup-python@v4  # Compatible with Node 16 and future Node 20
+      if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
     - name: Install dependencies
-      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Install dependencies if README needs updating or doesn't exist
+      if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
       run: |
         python -m pip install --upgrade pip
         pip install PyGithub humanize
 
     - name: Run Python script to update README
-      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Always update README if it doesn't exist
+      if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
       run: python update_readme.py
 
     - name: Commit changes
-      if: steps.check_changes.outputs.changed == 'true' || ! -f README.md  # Commit changes if README doesn't exist or changes detected
+      if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
