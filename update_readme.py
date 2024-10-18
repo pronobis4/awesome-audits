@@ -32,18 +32,20 @@ def update_readme():
 
         total_repos = 0
         newest_project = None
-        one_month_ago = datetime.now() - timedelta(days=30)
+        six_months_ago = datetime.now() - timedelta(days=180)
 
         for repo, last_commit, time_ago, added_date in repo_info:
             total_repos += 1
             added_date_obj = datetime.strptime(added_date, '%Y-%m-%d')
-            
+
             if not newest_project or added_date_obj > datetime.strptime(newest_project[1], '%Y-%m-%d'):
                 newest_project = (repo.full_name, added_date)
 
-            new_tag = " 🆕" if added_date_obj > one_month_ago else ""
-            
-            f.write(f"| [{repo.full_name}]({repo.html_url}){new_tag} | {repo.description or 'No description'} | {last_commit.strftime('%Y-%m-%d')} ({time_ago}) | {added_date} |\n")
+            # Add new and sleepy tags
+            new_tag = " 🆕" if added_date_obj > datetime.now() - timedelta(days=30) else ""
+            sleepy_tag = " 😴" if last_commit < six_months_ago else ""
+
+            f.write(f"| [{repo.full_name}]({repo.html_url}){new_tag}{sleepy_tag} | {repo.description or 'No description'} | {last_commit.strftime('%Y-%m-%d')} ({time_ago}) | {added_date} |\n")
 
         f.write("\n## Statistics\n\n")
         f.write(f"- Total number of audit repositories: {total_repos}\n")
@@ -65,8 +67,15 @@ def update_readme():
         f.write("This ensures you always have access to the most current information about these audit repositories.\n\n")
         f.write("## Contact\n\n")
         f.write("If you have any questions or suggestions, feel free to reach out:\n\n")
-        f.write("- Twitter: [@yourusername](https://twitter.com/yourusername)\n\n")
+        f.write("- Twitter: [@Pronobis4](https://twitter.com/Pronobis4)\n\n")
         f.write(f"---\n\n*Last updated: {datetime.now().strftime('%Y-%m-%d')}*\n")
+
+        # Add legend for icons
+        f.write("\n## Legend\n\n")
+        f.write("| Icon | Meaning |\n")
+        f.write("|------|---------|\n")
+        f.write("| 🆕   | New repository (added in the last month) |\n")
+        f.write("| 😴   | Sleepy repository (last commit over six months ago) |\n")
 
 if __name__ == "__main__":
     update_readme()
