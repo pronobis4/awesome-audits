@@ -46,7 +46,7 @@ jobs:
       if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
       run: |
         python -m pip install --upgrade pip
-        pip install PyGithub humanize
+        pip install PyGithub humanize pytz
 
     - name: Run Python script to update README
       if: steps.check_changes.outputs.changed == 'true' || steps.check_readme.outputs.exists == 'false'
